@@ -16,7 +16,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { createVesta } from '../lib/vesta.js';
 import { patchScene } from '../lib/scene.js';
 
-const VERSION = '0.1.2';
+const VERSION = '0.1.3';
 const TEMPLATE = new URL('../templates/template.vesta', import.meta.url);
 
 const args = process.argv.slice(2);
