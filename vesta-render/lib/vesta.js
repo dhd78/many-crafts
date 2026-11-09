@@ -106,93 +106,6 @@ $after = @(Get-Process -Name VESTA -ErrorAction SilentlyContinue).Count
 [pscustomobject]@{ before = $before; after = $after } | ConvertTo-Json -Compress
 `;
 
-/**
- * 构造截屏脚本：截取指定窗口矩形（屏幕 BitBlt，OpenGL 窗口也能正确取到）。
- * 只用 P/Invoke 操作窗口和 GDI；位图对象由 PowerShell 侧的 System.Drawing 创建，
- * 避免在 PowerShell 5.1 里给 Add-Type 传错误的程序集引用。
- *
- * @param {number} hwnd 窗口句柄。
- * @param {string} outputPath 输出 PNG 路径。
- */
-export function buildScreenshotScript(hwnd, outputPath) {
-  const escaped = outputPath.replace(/'/g, "''");
-  return String.raw`
-[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
-$ErrorActionPreference = 'Stop'
-try {
-    Add-Type -AssemblyName System.Drawing
-    Add-Type -TypeDefinition @'
-using System;
-using System.Runtime.InteropServices;
-public static class VestaShot {
-    [StructLayout(LayoutKind.Sequential)] public struct RECT { public int Left; public int Top; public int Right; public int Bottom; }
-    [DllImport("user32.dll")] public static extern bool GetWindowRect(IntPtr h, out RECT r);
-    [DllImport("user32.dll")] public static extern bool SetForegroundWindow(IntPtr h);
-    [DllImport("user32.dll")] public static extern bool ShowWindow(IntPtr h, int cmd);
-    [DllImport("user32.dll")] public static extern bool IsIconic(IntPtr h);
-    [DllImport("user32.dll")] public static extern int GetSystemMetrics(int index);
-    [DllImport("user32.dll")] public static extern bool SetProcessDPIAware();
-    [DllImport("user32.dll")] public static extern IntPtr GetDC(IntPtr h);
-    [DllImport("user32.dll")] public static extern int ReleaseDC(IntPtr h, IntPtr dc);
-    [DllImport("user32.dll")] public static extern bool PrintWindow(IntPtr h, IntPtr dc, uint flags);
-    [DllImport("gdi32.dll")] public static extern bool BitBlt(IntPtr dst, int x, int y, int w, int h, IntPtr src, int sx, int sy, int rop);
-
-    public static void Focus(long handle) {
-        IntPtr h = new IntPtr(handle);
-        if (IsIconic(h)) { ShowWindow(h, 9); }
-        SetForegroundWindow(h);
-    }
-    public static int[] WindowRect(long handle) {
-        RECT r;
-        GetWindowRect(new IntPtr(handle), out r);
-        return new int[] { r.Left, r.Top, r.Right - r.Left, r.Bottom - r.Top };
-    }
-    public static int[] VirtualScreen() {
-        return new int[] { GetSystemMetrics(76), GetSystemMetrics(77), GetSystemMetrics(78), GetSystemMetrics(79) };
-    }
-    // 先抓屏幕像素；失败时退回 PrintWindow（窗口被遮挡或屏幕抓取不可用时仍可能成功）。
-    public static string Blit(long handle, IntPtr dst, int w, int h, int left, int top) {
-        IntPtr src = GetDC(IntPtr.Zero);
-        bool ok = BitBlt(dst, 0, 0, w, h, src, left, top, 0x00CC0020);
-        ReleaseDC(IntPtr.Zero, src);
-        if (ok) { return "bitblt"; }
-        IntPtr hwnd = new IntPtr(handle);
-        if (PrintWindow(hwnd, dst, 2)) { return "printwindow2"; }
-        if (PrintWindow(hwnd, dst, 0)) { return "printwindow0"; }
-        return null;
-    }
-}
-'@
-    $handle = [long]${hwnd}
-    [void][VestaShot]::SetProcessDPIAware()
-    [VestaShot]::Focus($handle)
-    Start-Sleep -Milliseconds 500
-    $r = [VestaShot]::WindowRect($handle)
-    $s = [VestaShot]::VirtualScreen()
-    $left = [Math]::Max($r[0], $s[0])
-    $top = [Math]::Max($r[1], $s[1])
-    $right = [Math]::Min($r[0] + $r[2], $s[0] + $s[2])
-    $bottom = [Math]::Min($r[1] + $r[3], $s[1] + $s[3])
-    $w = $right - $left
-    $ht = $bottom - $top
-    if ($w -le 0 -or $ht -le 0) { throw '窗口不在可见桌面范围内' }
-    $bmp = New-Object System.Drawing.Bitmap($w, $ht)
-    $g = [System.Drawing.Graphics]::FromImage($bmp)
-    $dst = $g.GetHdc()
-    $method = [VestaShot]::Blit($handle, $dst, $w, $ht, $left, $top)
-    $g.ReleaseHdc($dst)
-    $g.Dispose()
-    if ($null -eq $method) { throw ("BitBlt/PrintWindow 均失败；rect=$($r -join ',') screen=$($s -join ',')") }
-    $bmp.Save('${escaped}', [System.Drawing.Imaging.ImageFormat]::Png)
-    $bmp.Dispose()
-    [pscustomobject]@{ ok = $true; width = $w; height = $ht; method = $method } | ConvertTo-Json -Compress
-} catch {
-    [pscustomobject]@{ ok = $false; error = $_.Exception.Message } | ConvertTo-Json -Compress
-    exit 1
-}
-`;
-}
-
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 /** 把 PowerShell 的 CLIXML/堆栈整理成一行可读错误。 */
@@ -255,7 +168,6 @@ export function createVesta({ config = {}, logger } = {}) {
     vestaPath: DEFAULT_EXE,
     defaultScale: 2,
     exportTimeoutMs: 120000,
-    screenshotTimeoutMs: 30000,
     ...config,
   };
 
@@ -557,54 +469,6 @@ export function createVesta({ config = {}, logger } = {}) {
     }
   };
 
-  /**
-   * 截取正在运行的 VESTA 窗口。
-   * @param {{ output?: string, pid?: number, timeoutMs?: number }} [options]
-   */
-  const screenshot = async ({ output, pid, timeoutMs } = {}) => {
-    requireExe();
-    const windows = await listWindows();
-    if (windows.length === 0) throw new VestaError('当前没有正在运行的 VESTA 窗口，先用 vesta_open 打开一个结构文件。');
-
-    const candidates = pid === undefined ? windows : windows.filter((win) => win.pid === pid);
-    if (candidates.length === 0) throw new VestaError(`没有找到 PID 为 ${pid} 的 VESTA 窗口。`);
-    const target = candidates
-      .filter((win) => win.visible && win.width > 0 && win.height > 0)
-      .sort((a, b) => b.width * b.height - a.width * a.height)[0] ?? candidates[0];
-
-    const outPath = path.resolve(output ?? path.join(process.cwd(), 'vesta-shots', `vesta-${timestamp()}.png`));
-    mkdirSync(path.dirname(outPath), { recursive: true });
-    if (existsSync(outPath)) unlinkSync(outPath);
-
-    const { code, stdout, stderr } = await runPowerShell(
-      buildScreenshotScript(target.hwnd, outPath),
-      Number.isInteger(timeoutMs) && timeoutMs >= 5000 ? timeoutMs : settings.screenshotTimeoutMs,
-    );
-
-    let result;
-    try {
-      result = JSON.parse(stdout.trim());
-    } catch {
-      result = undefined;
-    }
-    if (code !== 0 || result === undefined || result.ok !== true || !existsSync(outPath)) {
-      const reason = result?.error ?? (cleanPowerShellError(stderr || stdout) || `退出码 ${code}`);
-      throw new VestaError(`截屏失败：${reason}`);
-    }
-
-    const size = statSync(outPath).size;
-    const info = imageInfo(outPath);
-    return {
-      output: outPath,
-      bytes: size,
-      width: Number(result.width) || info?.width || 0,
-      height: Number(result.height) || info?.height || 0,
-      windowTitle: target.title,
-      windowClass: target.class,
-      pid: target.pid,
-    };
-  };
-
   /** 关闭所有 VESTA 窗口（先礼后兵）。 */
   const close = async ({ force = false } = {}) => {
     requireSupported();
@@ -645,7 +509,6 @@ export function createVesta({ config = {}, logger } = {}) {
     open,
     exportImage,
     renderScene,
-    screenshot,
     close,
     settings,
     logger,
