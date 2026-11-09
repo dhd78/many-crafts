@@ -1,0 +1,60 @@
+{
+  "name": "dsh-vesta",
+  "version": "0.1.0",
+  "description": "VESTA bridge for DSH: open structure files, render images from the command line, capture the window, and manage the process",
+  "license": "MIT",
+  "author": "dhd (https://github.com/dhd78)",
+  "contributors": [
+    {
+      "name": "dhd",
+      "url": "https://github.com/dhd78"
+    }
+  ],
+  "keywords": [
+    "dsh",
+    "deepseek-harness",
+    "plugin",
+    "dsh-plugin",
+    "vesta",
+    "crystallography",
+    "materials-science",
+    "automation"
+  ],
+  "type": "module",
+  "main": "./index.js",
+  "icon": "./icon.svg",
+  "exports": {
+    ".": "./index.js",
+    "./icon": "./icon.svg",
+    "./locale/*.json": "./locale/*.json",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "index.js",
+    "lib",
+    "cordis.patch.yml",
+    "locale/*.json",
+    "icon.svg",
+    "README.md",
+    "LICENSE",
+    "AI-DISCLOSURE.md",
+    "THIRD_PARTY_NOTICES.md",
+    "docs"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dhd78/many-crafts.git"
+  },
+  "homepage": "https://github.com/dhd78/many-crafts#readme",
+  "bugs": {
+    "url": "https://github.com/dhd78/many-crafts/issues"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  }
+}
