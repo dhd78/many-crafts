@@ -17,7 +17,7 @@ Two forms are provided per program:
 
 | Directory | For | What it does |
 | --- | --- | --- |
-| [`vesta-render`](vesta-render/) | Claude Code, Cursor, Copilot and other `SKILL.md` agents | Same VESTA workflow as a standalone CLI + `SKILL.md`; no DSH dependency. Verified with VESTA 3.90.6a on Windows 11 |
+| [`vesta-render`](vesta-render/) | Claude Code, Cursor, Copilot and other `SKILL.md` agents | Same VESTA workflow as a standalone CLI + `SKILL.md`; no DSH dependency. Verified with VESTA 3.90.6a on Windows 11. Also on [Agensi](https://www.agensi.io/skills/vesta-render) (free) |
 
 ## Layout
 
