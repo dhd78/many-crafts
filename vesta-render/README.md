@@ -1,6 +1,6 @@
 # vesta-render
 
-把本机 [VESTA](https://jp-minerals.org/vesta/en/) 包装成跨 agent 可用的命令行技能：打开结构文件、渲染 PNG、覆盖 `.vesta` 场景的视角/缩放/范围/背景、截取窗口、关闭进程。
+把本机 [VESTA](https://jp-minerals.org/vesta/en/) 包装成跨 agent 可用的命令行技能：打开结构文件、渲染 PNG、覆盖 `.vesta` 场景的视角/缩放/范围/背景、关闭进程。
 
 **English:** `vesta-render` is a portable CLI skill that lets an agent drive a locally installed VESTA on Windows: open CIF / POSCAR / `.vesta` files, render PNGs via `-export_img`, override view / zoom / boundary / background on `.vesta` scenes, capture the window, and close the process. No DSH dependency, no injection, no memory reading, no bundled VESTA.
 
@@ -60,11 +60,11 @@ node scripts\vesta.mjs render examples\fe_slab.vesta --view 1,0,0 --zoom 0.8 --o
 
 ## 验证状态（候选包 v0.1.2）
 
-本目录是 **v0.1.2 候选**（相对 v0.1.1：换上游修复版 `lib/vesta.js`，从 exe 读构建号；VESTA 版本更正为 3.90.6a；补 00 回归记录；LICENSE 只写 dhd），未发布。已做：
+本目录是 **v0.1.3 候选**（相对 v0.1.2：技能包只保留 `status` / `open` / `export` / `render` / `close`；渲染只走 `export` / `render`；插件保留自己的窗口能力），未发布。已做：
 
 - 结构自检、Node 语法、`doctor --strict`（真实 VESTA 3.90.6a）、CLI `--help` / `status`；
 - 真实 CIF → PNG 渲染；真实 `.vesta` 渲染 + `view` / `zoom` / `boundary` / `background` 四项覆盖；
-- 缺 VESTA / 假路径 / 未知命令的错误提示；路径含空格与中文；
+- 缺 VESTA / 假路径 / 未知命令的错误提示；路径含空格与中文；`open` → `close` 正常；
 - 确定性 zip（两次 SHA 一致）、干净解压、包内 SHA 逐项核对、敏感信息 / 私有路径扫描；
 - 00 独立回归（v0.1.1）：G1/G2 PASS，G3 PARTIAL —— **Cursor 3.29.9 真实实跑通过**（识别 skill、`doctor`、`export` 出 1740×1352 PNG）；**Claude Code 2.1.319 未验证**（需 Anthropic 账号，业主不付费）。
 
