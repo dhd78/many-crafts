@@ -114,7 +114,7 @@ node scripts/vesta.mjs close
 
 ## English
 
-`vesta-render` is a portable CLI skill that drives a locally installed [VESTA](https://jp-minerals.org/vesta/en/) on Windows: open CIF / POSCAR / `.vesta` files, render PNGs through `-export_img`, override view / zoom / boundary / background on `.vesta` scenes, capture the window, and close the process.
+`vesta-render` is a Windows CLI skill that drives a locally installed [VESTA](https://jp-minerals.org/vesta/en/): open CIF / POSCAR / `.vesta` files, render PNGs through `-export_img`, override view / zoom / boundary / background on `.vesta` scenes, and close the process.
 
 - Requirements: Windows, Node >= 22, VESTA 3.90.6a tested (not bundled; earlier versions untested; the `3.4.5` in `VESTA.ini` is a file-format constant, not the app version).
 - Install: unzip anywhere, set `VESTA_EXE`, run `node scripts/doctor.mjs --strict`.
