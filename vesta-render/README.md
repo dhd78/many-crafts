@@ -2,7 +2,10 @@
 
 把本机 [VESTA](https://jp-minerals.org/vesta/en/) 包装成跨 agent 可用的命令行技能：打开结构文件、渲染 PNG、覆盖 `.vesta` 场景的视角/缩放/范围/背景、关闭进程。
 
-**English:** `vesta-render` is a Windows CLI skill that lets an agent drive a locally installed VESTA: open CIF / POSCAR / `.vesta` files, render PNGs via `-export_img`, override view / zoom / boundary / background on `.vesta` scenes, and close the process. No DSH dependency, no injection, no memory reading, no bundled VESTA.
+**English:** `vesta-render` is a Windows CLI skill that drives a locally installed VESTA:
+open CIF / POSCAR / `.vesta` files, render PNGs through `-export_img`,
+override view / zoom / boundary / background on `.vesta` scenes, and close the process.
+No DSH dependency, no injection, no memory reading, no screen reading, no bundled VESTA.
 
 - 入口：`node scripts/vesta.mjs <command>`
 - 自检：`node scripts/doctor.mjs --strict`
