@@ -286,13 +286,53 @@ export function createVesta({ config = {}, logger } = {}) {
     if (!exists()) throw new VestaError(`找不到 VESTA.exe：${exePath()}。请检查插件配置里的 vestaPath。`);
   };
 
+  let cachedBuild;
+
+  /**
+   * VESTA.ini 的版本行是首次安装时写入的，升级后不会更新（例如仍写 3.4.5），
+   * 所以真实构建号从 exe 里取：二进制含 "VESTA <version>" 的提示串，例如 3.90.6a。
+   * 只读一次并缓存。
+   */
+  const exeBuild = () => {
+    if (cachedBuild !== undefined) return cachedBuild;
+    cachedBuild = null;
+    try {
+      const exe = exePath();
+      const size = statSync(exe).size;
+      const fd = openSync(exe, 'r');
+      try {
+        const chunk = 4 * 1024 * 1024;
+        const buf = Buffer.allocUnsafe(chunk + 64);
+        let pos = 0;
+        let tail = '';
+        while (pos < size) {
+          const read = readSync(fd, buf, 0, chunk, pos);
+          if (read <= 0) break;
+          const text = tail + buf.toString('latin1', 0, read);
+          const match = /VESTA (\d+\.\d+\.\d+[a-z]?)/.exec(text);
+          if (match !== null) {
+            cachedBuild = match[1];
+            return cachedBuild;
+          }
+          tail = text.slice(-64);
+          pos += read;
+        }
+      } finally {
+        closeSync(fd);
+      }
+    } catch {
+      cachedBuild = null;
+    }
+    return cachedBuild;
+  };
+
   const version = () => {
     try {
       const ini = path.join(path.dirname(exePath()), 'VESTA.ini');
       const firstLine = (readFileSync(ini, 'utf8').split(/\r?\n/, 1)[0] ?? '').trim();
       const match = /#VESTA_INI_VER\s+(\d+(?:\.\d+)*)\s+(\d+(?:\.\d+)*)/.exec(firstLine);
       if (match === null) return undefined;
-      return { iniFormat: match[1], app: match[2] };
+      return { iniFormat: match[1], app: match[2], build: exeBuild() ?? undefined };
     } catch {
       return undefined;
     }
@@ -590,7 +630,7 @@ export function createVesta({ config = {}, logger } = {}) {
     return {
       exe: exePath(),
       exists: exists(),
-      version: info?.app,
+      version: info?.build ?? info?.app,
       iniFormat: info?.iniFormat,
       windows: await listWindows().catch(() => []),
     };
