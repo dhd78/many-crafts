@@ -8,7 +8,7 @@ license: MIT
 
 ## 这个技能做什么
 
-把本机安装的 [VESTA](https://jp-minerals.org/vesta/en/) 变成一个可脚本调用的工具：打开结构文件、用 `-export_img` 渲染 PNG、按晶向/缩放/范围/背景覆盖 `.vesta` 场景、截取窗口、关闭进程。渲染结果是普通图片文件，不依赖截图识别或 OCR。
+把本机安装的 [VESTA](https://jp-minerals.org/vesta/en/) 变成一个可脚本调用的工具：打开结构文件、用 `-export_img` 渲染 PNG、按晶向/缩放/范围/背景覆盖 `.vesta` 场景、关闭进程。渲染结果是普通图片文件，不依赖 OCR 或屏幕抓取。
 
 不捆绑 VESTA，不读取 VESTA 内存，不注入进程。**前提：VESTA 必须由用户自行安装**（本包不包含、不下载、不代替安装），并遵守其许可与引用要求。
 
@@ -53,8 +53,7 @@ node scripts/vesta.mjs render my-scene.vesta --view 0,0,1 --zoom 0.9 --boundary 
 # 把覆盖后的场景另存（之后再渲染，便于复现）
 node scripts/vesta.mjs render my-scene.vesta --view 1,1,0 --save-scene out/my-scene-view110.vesta --out out/view110.png
 
-# 截取正在运行的 VESTA 窗口 / 关闭
-node scripts/vesta.mjs screenshot --out out/window.png
+# 关闭
 node scripts/vesta.mjs close
 ```
 
@@ -94,7 +93,7 @@ node scripts/vesta.mjs close
 - 只做文件级控制 + 命令行渲染 + 窗口管理；**不读取 VESTA 内存**，不注入 DLL。
 - VESTA 是单实例程序：已有窗口时，`open` / `render` 会把文件转发到该窗口，可能切换焦点；批量渲染前先 `close`。
 - 多面体、空间填充、线框、逐元素半径/颜色、光照、标签没有程序化覆盖；需要时先在 VESTA 里调好并另存 `.vesta` 场景，再用 `view` / `zoom` / `boundary` / `background` 覆盖。
-- 截屏是屏幕 `BitBlt`（失败回退 `PrintWindow`）；窗口被遮挡或完全移出屏幕时可能不完整。
+- 不读取 VESTA 内存，不注入 DLL，也不做屏幕抓取；渲染只走 VESTA 命令行与 `.vesta` 文件。
 - 不捆绑 VESTA / 商业 SDK / 论文原图；示例只含自建结构的 CIF。
 
 ## 跨 agent 接入
@@ -119,6 +118,6 @@ node scripts/vesta.mjs close
 
 - Requirements: Windows, Node >= 22, VESTA 3.90.6a tested (not bundled; earlier versions untested; the `3.4.5` in `VESTA.ini` is a file-format constant, not the app version).
 - Install: unzip anywhere, set `VESTA_EXE`, run `node scripts/doctor.mjs --strict`.
-- Usage: `node scripts/vesta.mjs status|open|export|render|screenshot|close` (JSON output, exit code 0/1).
+- Usage: `node scripts/vesta.mjs status|open|export|render|close` (JSON output, exit code 0/1).
 - Boundaries: no VESTA memory reading, no injection, no bundled VESTA; Windows-only.
 - License: MIT; AI disclosure and third-party notices are included.
