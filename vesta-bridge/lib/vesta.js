@@ -289,7 +289,7 @@ export function createVesta({ config = {}, logger } = {}) {
   let cachedBuild;
 
   /**
-   * VESTA.ini 的版本行是首次安装时写入的，升级后不会更新（例如仍写 3.4.5），
+   * VESTA.ini 第二段（如 3.4.5）是该文件的格式版本常量，不是程序版本，也不能用来判断旧版；
    * 所以真实构建号从 exe 里取：二进制含 "VESTA <version>" 的提示串，例如 3.90.6a。
    * 只读一次并缓存。
    */
