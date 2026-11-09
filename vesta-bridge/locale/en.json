@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "VESTA Console",
+    "description": "Open structure files, render figures through VESTA's command line, capture the VESTA window, and manage its process."
+  }
+}
