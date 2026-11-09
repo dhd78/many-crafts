@@ -12,7 +12,7 @@
 
 import { createVesta } from '../lib/vesta.js';
 
-const VERSION = '0.1.2';
+const VERSION = '0.1.3';
 
 const HELP = `vesta-render ${VERSION}
 
@@ -26,12 +26,11 @@ const HELP = `vesta-render ${VERSION}
   open <file...>                  用 VESTA 打开 CIF / POSCAR / .vesta
   export <input>                  命令行渲染结构文件为 PNG
   render <scene.vesta>            渲染 .vesta 场景，可临时覆盖视角/缩放/范围/背景
-  screenshot                      截取正在运行的 VESTA 窗口
   close                           关闭 VESTA（先 WM_CLOSE，必要时 --force）
 
 通用选项：
   --vesta <path>                  指定 VESTA.exe（优先于环境变量 VESTA_EXE）
-  --out <path>                    输出路径（export / render / screenshot）
+  --out <path>                    输出路径（export / render）
   --scale <1-10>                  渲染倍率，默认 2
   --timeout <ms>                  超时，默认 120000
   -h, --help                      显示本帮助
@@ -179,15 +178,6 @@ const handlers = {
       timeoutMs: intOption(opts.timeout, '--timeout', { min: 5000 }),
       overrides,
       saveSceneAs: typeof opts['save-scene'] === 'string' ? opts['save-scene'] : undefined,
-    });
-  },
-
-  async screenshot(opts) {
-    const vesta = makeVesta(opts);
-    return await vesta.screenshot({
-      output: typeof opts.out === 'string' ? opts.out : undefined,
-      pid: intOption(opts.pid, '--pid', { min: 1 }),
-      timeoutMs: intOption(opts.timeout, '--timeout', { min: 5000 }),
     });
   },
 
