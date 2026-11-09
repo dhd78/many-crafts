@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="VESTA console">
+  <defs>
+    <linearGradient id="vbg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0b1220"/>
+      <stop offset="1" stop-color="#1d3f8f"/>
+    </linearGradient>
+    <radialGradient id="vatomA" cx="35%" cy="28%" r="80%">
+      <stop offset="0" stop-color="#dbeafe"/>
+      <stop offset="0.55" stop-color="#60a5fa"/>
+      <stop offset="1" stop-color="#1d4ed8"/>
+    </radialGradient>
+    <radialGradient id="vatomB" cx="35%" cy="28%" r="80%">
+      <stop offset="0" stop-color="#fee2e2"/>
+      <stop offset="0.55" stop-color="#f87171"/>
+      <stop offset="1" stop-color="#b91c1c"/>
+    </radialGradient>
+  </defs>
+  <rect width="64" height="64" rx="14" fill="url(#vbg)"/>
+  <g fill="none" stroke="#93c5fd" stroke-width="1.5" stroke-linejoin="round" opacity="0.85">
+    <path d="M17 23 L32 15.5 L47 23 L47 42.5 L32 50 L17 42.5 Z"/>
+    <path d="M17 23 L17 42.5 M32 15.5 L32 35 M47 23 L47 42.5 M32 35 L47 42.5 M32 35 L17 42.5"/>
+  </g>
+  <g stroke="#e2e8f0" stroke-width="2" stroke-linecap="round" opacity="0.75">
+    <path d="M24 31 L39 36.5"/>
+    <path d="M27.5 24.5 L38.5 27.5"/>
+  </g>
+  <circle cx="24" cy="31" r="4.3" fill="url(#vatomA)"/>
+  <circle cx="39" cy="36.5" r="4.3" fill="url(#vatomB)"/>
+  <circle cx="27.5" cy="24.5" r="3.2" fill="url(#vatomA)"/>
+</svg>
