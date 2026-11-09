@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "VESTA 控制台",
+    "description": "打开结构文件、用命令行渲染结构图、截取 VESTA 窗口并管理进程。"
+  }
+}
