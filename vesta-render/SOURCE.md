@@ -93,3 +93,14 @@
 | LICENSE | 只写 `Copyright (c) 2026 dhd`（业主 2026-11-09 决定）；AI 参与仍写在 `AI-DISCLOSURE.md` |
 
 完整命令与输出见本次打包的本地审计记录（不随包分发）。
+
+## 发布记录
+
+| 渠道 | 状态 | 地址 / 值 |
+| --- | --- | --- |
+| GitHub（源码，完整包） | 已发布 | <https://github.com/dhd78/many-crafts/tree/main/vesta-render> |
+| Agensi（免费条目，文本包） | **已上架**（2026-11-09，审核通过） | <https://www.agensi.io/skills/vesta-render> |
+| 完整包 SHA-256 | `vesta-render-v0.1.3.zip` | `0E30589CEBCD62FAF2D1FD59913E6E41E3313E398202C12C889E1F17FFA7A6FB` |
+| Agensi 包 SHA-256 | `vesta-render-v0.1.3-agensi.zip` | `31126970FA30E563B9DBDBDBC496F248D8EBA4A402610E71DB824A373DC5EE77` |
+
+上架页面显示：Security scanned 通过、Free、分类 Research & Analysis、标签含 vesta / crystallography / materials-science / cif。
