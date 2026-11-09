@@ -2,7 +2,7 @@
 
 ## VESTA
 
-- Product: VESTA (Visualization for Electronic and Structural Analysis), 3.4.5 tested
+- Product: VESTA (Visualization for Electronic and Structural Analysis), 3.90.6a tested
 - Authors: Koichi Momma and Fujio Izumi
 - Site: <https://jp-minerals.org/vesta/en/>
 - License: VESTA's own license (free of charge; citation requested by the authors)
