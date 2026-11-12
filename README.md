@@ -11,13 +11,13 @@ Two forms are provided per program:
 
 | Directory | Software | What it does |
 | --- | --- | --- |
-| [`vesta-bridge`](vesta-bridge/) | [VESTA](https://jp-minerals.org/vesta/en/) (crystal structure visualization) | Opens structure files, renders PNGs via `-export_img`, captures the window, manages the process; `.vesta` scenes support view/zoom/boundary/background overrides |
+| [`vesta-bridge`](vesta-bridge/) | [VESTA](https://jp-minerals.org/vesta/en/) (crystal structure visualization) | Opens structure files, renders PNGs via `-export_img`, captures the window, manages the process; `.vesta` scenes support view/zoom/boundary/background overrides. `skill/` holds the `SKILL.md` wrapper |
 
 ## Skills
 
 | Directory | For | What it does |
 | --- | --- | --- |
-| [`vesta-render`](vesta-render/) | Claude Code, Cursor, Copilot and other `SKILL.md` agents | Same VESTA workflow as a standalone CLI + `SKILL.md`; no DSH dependency. Verified with VESTA 3.90.6a on Windows 11. Also on [Agensi](https://www.agensi.io/skills/vesta-render) (free) |
+| [`vesta-render`](https://github.com/dhd78/skills/tree/main/vesta-render) | Claude Code, Cursor, Copilot and other `SKILL.md` agents | Same VESTA workflow as a standalone CLI + `SKILL.md`; canonical copy in the [skills repo](https://github.com/dhd78/skills/tree/main/vesta-render), mirror at [`vesta-bridge/skill/`](vesta-bridge/skill/). Verified with VESTA 3.90.6a on Windows 11. Also on [Agensi](https://www.agensi.io/skills/vesta-render) (free) |
 
 ## Layout
 
@@ -36,9 +36,9 @@ many-crafts/
     AI-DISCLOSURE.md
     THIRD_PARTY_NOTICES.md
 
-  vesta-render/        agent skill
+  vesta-bridge/skill/  SKILL.md wrapper (mirror of the skills repo)
     SKILL.md           frontmatter + instructions for the agent
-    scripts/vesta.mjs  CLI (render / export / open / status / screenshot / close)
+    scripts/vesta.mjs  CLI (status / open / export / render / close)
     scripts/doctor.mjs preflight check
     lib/               shared with the plugin
     references/        implementation notes
@@ -49,6 +49,9 @@ many-crafts/
     AI-DISCLOSURE.md
     THIRD_PARTY_NOTICES.md
     SOURCE.md          upstream mapping and verification record
+    CANONICAL.md       points to the canonical copy
+
+  vesta-render/        pointer only (old path; see README.md)
 ```
 
 ## Design notes
